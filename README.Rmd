@@ -1,6 +1,15 @@
+---
+title: "Median Price Auction"
+author: "Mojtaba Tefagh"
+date: "4/9/2019"
+output:
+  md_document:
+    variant: markdown_github
+---
+
 We first download the data from the Ethereum blockchain.
 
-``` python
+```{python}
 import pandas as pd
 import numpy as np
 from web3 import Web3, HTTPProvider
@@ -44,11 +53,33 @@ for block in range(5000000, 5000100, 1):
 block_df.to_csv('tx.csv', sep='\t', index=False)
 ```
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+
+library(tidyverse)
+```
+
+```{r}
+tx.raw <- as.tbl(read.csv("tx.csv", sep = "\t"))
+```
+
 Before we begin, some plots from the raw data (gas price will be normalized later):
 
-![](README_files/figure-markdown_github/unnamed-chunk-3-1.png)![](README_files/figure-markdown_github/unnamed-chunk-3-2.png)
+```{r}
+ggplot(tx.raw,aes(x=block_mined, y=round_gp_10gwei))+geom_point()+labs(title="Gas Price")
+ggplot(tx.raw,aes(x=block_mined, y=gas_price))+geom_point()
+```
 
-Now, we throw out the `round_gp_10gpwei` column and divide the `gas_price` by 10<sup>8</sup>. Then we group our gas prices data by the blocks and we compute a summary (`min,median,mean,max`). The blocks are consecutive and their numbers are made to start from zero in order to have a bit more visually appealing plots!
+Now, we throw out the `round_gp_10gpwei` column and divide the `gas_price` by $10^8$. Then we group our gas prices data by the blocks and we compute a summary (`min,median,mean,max`). The blocks are consecutive and their numbers are made to start from zero in order to have a bit more visually appealing plots!
+
+
+```{r}
+tx.summary <- tx.raw %>% select(-round_gp_10gwei) %>%
+  mutate(gas_price=gas_price/10^8,block_mined=block_mined-min(block_mined)) %>% 
+  group_by(block_mined) %>%
+  summarise_at(.vars=vars(gas_price),.funs=funs(min(.),median(.),mean(.),max(.)))
+```
+
 
 Here are some plots. `geom_smooth()` uses by default the Local Regression (`loess` for short):
 
@@ -56,25 +87,58 @@ Here are some plots. `geom_smooth()` uses by default the Local Regression (`loes
 
 To show the effectiveness/stability of median over other methods, we plot the data points along with the prediction curve of each (`min,median,mean,max`). Notice the scale of `max` is quite different therefore, although it seems stable its prediction curve has much higher errors than median. See the last two plots to compare the scale of their fluctutations.
 
-![](README_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
-![](README_files/figure-markdown_github/unnamed-chunk-6-1.png)
+```{r}
+ggplot(tx.summary,aes(x=block_mined,y=min))+geom_smooth()+geom_point()+labs(title="min of gas prices")
+```
 
-![](README_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
-![](README_files/figure-markdown_github/unnamed-chunk-8-1.png)
+```{r}
+ggplot(tx.summary,aes(x=block_mined,y=mean))+geom_smooth()+geom_point()+labs(title="mean of gas prices")
+```
+
+
+
+```{r}
+ggplot(tx.summary,aes(x=block_mined,y=max))+geom_smooth()+geom_point()+labs(title="max of gas prices")
+```
+
+
+```{r}
+ggplot(tx.summary,aes(x=block_mined,y=median))+geom_smooth()+geom_point()+labs(title="median of gas prices")
+```
+
+
+
+
 
 Here is the max, median, and min statistics summary plot:
 
-![](README_files/figure-markdown_github/unnamed-chunk-9-1.png)
+```{r}
+ggplot(data = tx.raw %>% group_by(block_mined)) + 
+       stat_summary(
+             mapping = aes(x = block_mined, y = gas_price),
+             fun.ymin = min,
+             fun.ymax = max,
+             fun.y = median
+         )+labs(title="Summary of gas_prices")
+```
+
 
 Here is how the mean and median and minimum curves compare:
 
-![](README_files/figure-markdown_github/unnamed-chunk-10-1.png)
+```{r}
+ggplot(tx.summary,aes(x=block_mined))+geom_smooth(aes(y=min,colour="min"))+
+  geom_smooth(aes(y=median,colour="median"))+geom_smooth(aes(y=mean,colour="mean"))+labs(title="min_median_mean")+ylab("min_median_mean")+scale_colour_manual(name="legend", values=c("blue", "red","green"))
+
+```
 
 Here is how all curves compare:
 
-![](README_files/figure-markdown_github/unnamed-chunk-11-1.png)
+```{r}
+ggplot(tx.summary,aes(x=block_mined))+geom_smooth(aes(y=mean,colour="mean"))+geom_smooth(aes(y=median,colour="median"))+geom_smooth(aes(y=min,colour="min"))+geom_smooth(aes(y=max,colour="max"))+
+  labs(title="Summary gas prices")+ylab("min_median_mean_max")+scale_colour_manual(name="legend", values=c("blue", "red","green","black"))
+```
 
 <!-- Let us see how the method `gam` errors compare in each case: -->
 <!-- Here you will first need to normalized each column to make this meaningful -->
@@ -82,3 +146,7 @@ Here is how all curves compare:
 <!-- gam.med <- gam(min_gas_price~block_mined,data=tx.summary) -->
 <!-- gam.med$deviance -->
 <!-- ``` -->
+
+
+
+
