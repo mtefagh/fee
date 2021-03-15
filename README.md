@@ -222,6 +222,7 @@ sns.set(style="whitegrid")
 df[50:][df.substep == 1].plot('timestep', ['basefee'])
 ```
 
+
 Now assume a user with a considerable number of transactions (like an exchange) wants to manipulate the basefee. He can easily do so by sending all of his transactions in a full block and not sending any transactions in blocks with a size below the target size. This action would make basefee decrease over time and converge to zero. We have to incentivize such users to smoothly send their transactions instead of sending them in bulk.
 
 The problem of sending a large number of transactions is equivalent to the problem of liquidating a large portfolio as discussed in ["Optimal Execution of Portfolio Transactions"](https://pdfs.semanticscholar.org/3d2d/773983c5201b58586af463f045befae5bbf2.pdf) and as it is shown in that paper, with an additive cost function, the trader's optimal choice is to distribute the transactions across in time. So if we update basefee with an additive rule, users' optimal choice is to send transactions in all blocks.
