@@ -1,6 +1,10 @@
+# Problem with EIP-1559 and solution to the problem
 [![hackmd-github-sync-badge](https://hackmd.io/c6kyRNMuTnKf_SlolmevRg/badge)](https://hackmd.io/c6kyRNMuTnKf_SlolmevRg)
 
-As discussed in EIP-1559, users have to pay a basefee that will be burned for each transaction. Basefee is updated with a multiplication rule derived from the size of the last block. If the last block size is more than the target size, basefee will increase, and if the last block is not full, basefee will decrease.
+## introduction
+
+
+As discussed in EIP-1559, users have to pay a basefee that will be burned for each transaction. Basefee is updated with a multiplicative rule derived from the size of the last block. If the last block size is more than the target size, basefee will increase, and if the last block is not full, basefee will decrease.
 
 We will simulate the basefee parameter in EIP-1559 and show in a world with only 5% rationality, basefee would decrease to 0.
 Then we are going to show that an additive equation for updating basefee would solve this problem.
@@ -49,7 +53,7 @@ constants = {
 }
 ```
 
-Here we declare a demand function that generates new transactions for each block. In this simulation, we assume only 5% of the population can wait for at least 10 blocks, and other transactions will be sent immediately after creation.
+Here we declare a demand function that generates new transactions for each block. In this simulation, we assume only 5% of the population can wait for at most 10 blocks, and other transactions will be sent immediately after creation.
 
 We can simply see that a rational choice for a user is that if the user thinks basefee will increase, he should send the transaction immediately, and if basefee is going to decrease, he should wait for at least one block. 
 
@@ -221,6 +225,7 @@ import matplotlib.pyplot as plt
 sns.set(style="whitegrid")
 df[50:][df.substep == 1].plot('timestep', ['basefee'])
 ```
+<img src='https://raw.githubusercontent.com/alidarvishi14/EIP-1559-simulation/1a2871f8749b113a14139835c5ae7c46dff93ee8/output_19_0.svg'>
 
 
 Now assume a user with a considerable number of transactions (like an exchange) wants to manipulate the basefee. He can easily do so by sending all of his transactions in a full block and not sending any transactions in blocks with a size below the target size. This action would make basefee decrease over time and converge to zero. We have to incentivize such users to smoothly send their transactions instead of sending them in bulk.
@@ -291,9 +296,9 @@ df2 = pd.DataFrame(raw_result)
 And finally plot two plots together.
 
 ``` python
-df.merge(df2,on=['timestep','subset','simulation','run','substep'],suffixes=('_multiplication','_additive'))[df.substep == 1][50:].plot('timestep', ['basefee_multiplication','basefee_additive'])
+df.merge(df2,on=['timestep','subset','simulation','run','substep'],suffixes=('_multiplicative','_additive'))[df.substep == 1][50:].plot('timestep', ['basefee_multiplicative','basefee_additive'])
 ```
-
+<img src="https://raw.githubusercontent.com/alidarvishi14/EIP-1559-simulation/1a2871f8749b113a14139835c5ae7c46dff93ee8/output_25_0.svg">
 
 We first download the data from the Ethereum blockchain.
 
