@@ -49,10 +49,9 @@ constants = {
 }
 ```
 
-Here we declare a demand function that generates new transactions for each block. In this simulation we assume only 5% of population can wait for at least for 10 blocks and other transactions will be sent immediately after creation.
+Here we declare a demand function that generates new transactions for each block. In this simulation, we assume only 5% of the population can wait for at least 10 blocks, and other transactions will be sent immediately after creation.
 
-
-We can simply see that a rational choice for a user is that if user thinks basefee is going to increase, he should send transaction immediately and if basefee is going to decrease, it is better for him to wait for at least one block. 
+We can simply see that a rational choice for a user is that if the user thinks basefee will increase, he should send the transaction immediately, and if basefee is going to decrease, he should wait for at least one block. 
 
 ``` python
 from random import randint
@@ -116,7 +115,7 @@ def is_valid(tx, basefee):
     return tx.fee_cap >= basefee
 ```
 
-This function is going to include valide transactions in the next block.
+This function is going to include valid transactions in the next block.
 
 ``` python
 def include_valid_txs(params, step, sL, s):
@@ -223,9 +222,9 @@ sns.set(style="whitegrid")
 df[50:][df.substep == 1].plot('timestep', ['basefee'])
 ```
 
-Now assume a user with a considerable number of transactions (like an exchange) wants to manipulate the basefee. He can easily do so with just sending all of his transactions in a full block and not sending any transactions in blocks with size below target size. This action would make basefee to decrease over time and converge to zero. We have to incentivize such users to smoothly send their transactions instead of sending them in bulks.
+Now assume a user with a considerable number of transactions (like an exchange) wants to manipulate the basefee. He can easily do so by sending all of his transactions in a full block and not sending any transactions in blocks with a size below the target size. This action would make basefee decrease over time and converge to zero. We have to incentivize such users to smoothly send their transactions instead of sending them in bulk.
 
-Problem of sending a large number of transactions is equivalent to problem of liquidating a large portfolio as discussed in ["Optimal Execution of Portfolio Transactions"](https://pdfs.semanticscholar.org/3d2d/773983c5201b58586af463f045befae5bbf2.pdf) and as it is shown in that paper, with an additive cost function the trader's optimal choice is to distribute the transactions across in time. So if we update basefee with an additive function, users optimal choice is to send transactions in all blocks.
+The problem of sending a large number of transactions is equivalent to the problem of liquidating a large portfolio as discussed in ["Optimal Execution of Portfolio Transactions"](https://pdfs.semanticscholar.org/3d2d/773983c5201b58586af463f045befae5bbf2.pdf) and as it is shown in that paper, with an additive cost function, the trader's optimal choice is to distribute the transactions across in time. So if we update basefee with an additive rule, users' optimal choice is to send transactions in all blocks.
 
 In this section we change update_basefee function.
 
