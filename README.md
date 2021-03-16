@@ -2,14 +2,28 @@
 [![hackmd-github-sync-badge](https://hackmd.io/c6kyRNMuTnKf_SlolmevRg/badge)](https://hackmd.io/c6kyRNMuTnKf_SlolmevRg)
 
 ## introduction
+[EIP 1559](https://eips.ethereum.org/EIPS/eip-1559) is an upgrades to the economic model of Ethereum. Proposed by Vitalik Buterin in his [Blockchain Resource Pricing](https://github.com/ethereum/research/blob/master/papers/pricing/ethpricing.pdf) paper, the mechanism is going to replace the first-price auction model governing the current fee market for transaction inclusion.
 
-
+## basefee and EIP-1559
 As discussed in EIP-1559, users have to pay a basefee that will be burned for each transaction. Basefee is updated with a multiplicative rule derived from the size of the last block. If the last block size is more than the target size, basefee will increase, and if the last block is not full, basefee will decrease.
 
-We will simulate the basefee parameter in EIP-1559 and show in a world with only 5% rationality, basefee would decrease to 0.
+In this proposal basefee is updated with this formula:
+
+![\Large delta](https://latex.codecogs.com/svg.latex?delta=gas\ used-target\ gas\ used)
+
+![\Large new\ basefee=basefee](https://latex.codecogs.com/svg.latex?new\ basefee=basefee+basefee\times\ \frac{delta}{target\ gas\ used}\times\frac{1}{basefee\ max\ change\ denominator})
+
+
+
+## simulation of basefee
+We will simulate the basefee parameter in EIP-1559 and show in a world with only 5% rational people, basefee would decrease to 0.
+
 Then we are going to show that an additive equation for updating basefee would solve this problem.
 
-First, we implement a class for transactions.
+First, we implement a class for transactions. In this class we store important data. users specify these parameters:
+* The *gas premium*, i.e., the "tip" to the block producers.
+* The *fee cap*, i.e., the highest gas price they are willing to pay.
+* The *waiting limit*, i.e., the maximum number of blocks they can wait to get lower basefee.
 
 ``` python
 import secrets
@@ -53,9 +67,11 @@ constants = {
 }
 ```
 
-Here we declare a demand function that generates new transactions for each block. In this simulation, we assume only 5% of the population can wait for at most 10 blocks, and other transactions will be sent immediately after creation.
+Here we declare a demand function that generates new transactions for each block. Gas premium and fee cap is generated randomly.
 
-We can simply see that a rational choice for a user is that if the user thinks basefee will increase, he should send the transaction immediately, and if basefee is going to decrease, he should wait for at least one block. 
+In this simulation, we assume only 5% of the population can wait for at most 10 blocks, and other transactions will be sent immediately after creation.
+
+We can simply see that a rational choice for a user is that if the user thinks basefee will increase, he should send the transaction immediately, and if basefee is going to decrease, he should wait for at least one block.
 
 ``` python
 from random import randint
@@ -159,7 +175,7 @@ def update_basefee(params, step, sL, s, _input):
     return ("basefee", new_basefee)
 ```
 
-Save last black in results.
+Save last block in results.
 
 ``` python
 def record_latest_block(params, step, sL, s, _input):
@@ -227,12 +243,12 @@ df[50:][df.substep == 1].plot('timestep', ['basefee'])
 ```
 <img src='https://raw.githubusercontent.com/alidarvishi14/EIP-1559-simulation/1a2871f8749b113a14139835c5ae7c46dff93ee8/output_19_0.svg'>
 
-
-Now assume a user with a considerable number of transactions (like an exchange) wants to manipulate the basefee. He can easily do so by sending all of his transactions in a full block and not sending any transactions in blocks with a size below the target size. This action would make basefee decrease over time and converge to zero. We have to incentivize such users to smoothly send their transactions instead of sending them in bulk.
-
+## a possible attack
+Now assume a user with a considerable number of transactions (like an exchange) wants to manipulate the basefee. He can simply do so by sending all of his transactions in a full block and not sending any transactions in blocks with a size below the target size. This action would make basefee decrease over time and converge to zero. We have to incentivize such users to smoothly send their transactions instead of sending them in bulk.
+## solution to attack
 The problem of sending a large number of transactions is equivalent to the problem of liquidating a large portfolio as discussed in ["Optimal Execution of Portfolio Transactions"](https://pdfs.semanticscholar.org/3d2d/773983c5201b58586af463f045befae5bbf2.pdf) and as it is shown in that paper, with an additive cost function, the trader's optimal choice is to distribute the transactions across in time. So if we update basefee with an additive rule, users' optimal choice is to send transactions in all blocks.
 
-In this section we change update_basefee function.
+In this section we change update_basefee function with an additive fucntion which is convex in basefee and gas_used jointly.
 
 ``` python
 def update_basefee(params, step, sL, s, _input):
