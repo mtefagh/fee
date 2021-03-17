@@ -1,6 +1,11 @@
 # Path-dependence problem with EIP-1559 and a possible solution to this problem
 [![hackmd-github-sync-badge](https://hackmd.io/c6kyRNMuTnKf_SlolmevRg/badge)](https://hackmd.io/c6kyRNMuTnKf_SlolmevRg)
 
+alidarvishi14@gmail.com
+
+with help from https://github.com/barnabemonnot/abm1559
+
+
 ## Introduction
 [EIP 1559](https://eips.ethereum.org/EIPS/eip-1559) is an upgrade to the economic model of Ethereum gas fee. Proposed by Vitalik Buterin in his [Blockchain Resource Pricing](https://github.com/ethereum/research/blob/master/papers/pricing/ethpricing.pdf) paper, this mechanism is going to replace the first-price auction model governing the current fee market for transaction inclusion.
 
@@ -71,7 +76,7 @@ Here, we declare a demand function that generates new transactions for each bloc
 
 In this simulation, we assume that only 5% of the transactions are not an emergency and can wait for at most 10 blocks, and the other transactions will be sent immediately after creation.
 
-We can simply see that a rational choice for a user is that if the user thinks basefee will increase, he should send the transaction immediately, and if basefee is going to decrease, he should wait for at least one block.
+We can simply see that a rational choice for a user is that if the user thinks basefee will increase, he should send the transaction immediately, and if basefee is going to decrease, he should wait for at least one block. If sent orders fill 50% or more of the block, patient users will wait.
 
 ``` python
 from random import randint
@@ -83,9 +88,9 @@ def update_demand_variable(params, step, sL, s, _input):
     
     # adding new transactions
     for i in range(500):
-        gas_premium = randint(1, 10) * (10 ** 10)
+        gas_premium = randint(1, 10) * (10 ** 8)
         fee_cap = gas_premium + randint(1, 10) * (10 ** 9)
-        waiting_limit = 10*(randint(1, 100)<5)
+        waiting_limit = 10*(randint(1, 100)<=5)
         tx = Transaction(
             gas_premium = gas_premium,
             gas_used = 25000,
@@ -318,7 +323,7 @@ df.merge(df2,on=['timestep','subset','simulation','run','substep'],suffixes=('_m
 
 ## Relation to constant function market makers
 
-This is interestingly related to the concept of path independence in automated market makers (see section 2.3 in [here](https://arxiv.org/abs/2003.10001)). Consider a hypothetical automated market maker as a protocol-level price oracle for the trading pair GAS/ETH whose reserve of gas and ether after the n-th trade are g_n and f_n \times g_n, respectively. Moreover, let g_{n+1} = g_n + M/2 - w_n, that is, g += excess. It can be proved that, the limit of f_n as the initial reserve g_0 goes to infinity is given by:
+This is interestingly related to the concept of path independence in automated market makers (see section 2.3 in [here](https://arxiv.org/abs/2003.10001)). Consider a hypothetical automated market maker as a protocol-level price oracle for the trading pair GAS/ETH whose reserve of gas and ether after the n-th trade are $g_n$ and $f_n \times g_n$, respectively. Moreover, let $g_{n+1} = g_n + M/2 - w_n$, that is, $g +=$ excess. It can be proved that, the limit of $f_n$ as the initial reserve $g_0$ goes to infinity is given by:
 - the Almgren-Chriss [additive](https://ethresear.ch/t/draft-position-paper-on-resource-pricing/2838/24) formula in the case of constant sum market maker,
 - and Vitalik's proposed [exponential](https://ethereum-magicians.org/t/eip-1559-fee-market-change-for-eth-1-0-chain/2783/26) formula in the case of constant product market maker.
 
