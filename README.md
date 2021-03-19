@@ -20,7 +20,7 @@ In this proposal basefee is updated according to the following formula:
 
 
 
-## The simulation of basefee
+## The simulation of permanent loss
 We will simulate the basefee parameter in EIP-1559 and show in a world where only 5% of users are rational enough to optimize for paying less fee if possible, the basefee will eventually decrease to 0.
 
 Later, we are going to show that an additive equation for updating basefee would solve this problem.
@@ -246,10 +246,10 @@ import matplotlib.pyplot as plt
 sns.set(style="whitegrid")
 df[50:][df.substep == 1].plot('timestep', ['basefee'])
 ```
-<img src='https://raw.githubusercontent.com/alidarvishi14/EIP-1559-simulation/1a2871f8749b113a14139835c5ae7c46dff93ee8/output_19_0.svg'>
+<img src='https://raw.githubusercontent.com/alidarvishi14/EIP-1559-simulation/b8e077ea0ea58e66ab11a9488a40436080682da9/output_19_0.svg'>
 
 ## An unintentional uncoordinated attack
-Now assume a percentage of users with a considerable number of transactions (like the users of a wallet client designed to have this optimization as a built-in feature) want to pay less basefee, even though, they do not intend to manipulate it. They can simply do so by sending all of their transactions in a more-than-target-full block and not sending any transactions in blocks with a size considerably below the target size. This action would make basefee decrease over time and converge to zero. We have to incentivize such honest but rational users to smoothly send their transactions instead of sending them in bulk.
+Now assume a percentage of users with a considerable number of transactions (like the users of a wallet client designed to have this optimization as a built-in feature) want to pay less basefee, even though, they do not intend to manipulate it. They can simply do so by sending all of their transactions in a more-than-target full block and not sending any transactions in blocks with a size considerably below the target size. This action would make basefee decrease over time and eventually converge to zero. We have to incentivize such honest but rational users to smoothly send their transactions instead of sending them in bulk.
 ## A possible solution to this attack
 The problem of sending a large number of transactions is equivalent to the problem of liquidating a large portfolio as discussed in ["Optimal Execution of Portfolio Transactions"](https://pdfs.semanticscholar.org/3d2d/773983c5201b58586af463f045befae5bbf2.pdf). It is shown in this paper that with an additive cost function, the trader's optimal execution of transaction strategy is to distribute the transactions across time. Therefore, if we update basefee with an additive rule, users are incentivised to gradually send transactions during a long period of time and spread them across different blocks which in turn helps to avoid network congestion.
 
@@ -319,7 +319,7 @@ And finally plot the two plots together.
 ``` python
 df.merge(df2,on=['timestep','subset','simulation','run','substep'],suffixes=('_multiplicative','_additive'))[df.substep == 1][50:].plot('timestep', ['basefee_multiplicative','basefee_additive'])
 ```
-<img src="https://raw.githubusercontent.com/alidarvishi14/EIP-1559-simulation/1a2871f8749b113a14139835c5ae7c46dff93ee8/output_25_0.svg">
+<img src="https://raw.githubusercontent.com/alidarvishi14/EIP-1559-simulation/b8e077ea0ea58e66ab11a9488a40436080682da9/output_25_0.svg">
 
 ## Relation to constant function market makers
 
