@@ -18,7 +18,7 @@ In this proposal basefee is updated according to the following formula:
 
 ![\Large basefee](https://latex.codecogs.com/svg.latex?new\ basefee=basefee+basefee\times\ \frac{delta}{target\ gas\ used}\times\frac{1}{basefee\ max\ change\ denominator})
 
-![fluctuation](README_files/figure-markdown_github/fluctuation.svg)
+![fluctuation](https://raw.githubusercontent.com/mtefagh/fee/master/README_files/figure-markdown_github/fluctuation.svg)
 
 ## The simulation of permanent loss
 We will simulate the basefee parameter in EIP-1559 and show in a world where only 5% of users are rational enough to optimize for paying less fee if possible, the basefee will eventually decrease to 0.
@@ -246,7 +246,7 @@ import matplotlib.pyplot as plt
 sns.set(style="whitegrid")
 df[50:][df.substep == 1].plot('timestep', ['basefee'])
 ```
-<img src='https://raw.githubusercontent.com/alidarvishi14/EIP-1559-simulation/b8e077ea0ea58e66ab11a9488a40436080682da9/output_19_0.svg'>
+<img src='https://raw.githubusercontent.com/mtefagh/fee/master/README_files/figure-markdown_github/basefee-1559.svg'>
 
 ## An unintentional uncoordinated attack
 
@@ -322,7 +322,7 @@ And finally plot the two plots together.
 ``` python
 df.merge(df2,on=['timestep','subset','simulation','run','substep'],suffixes=('_multiplicative','_additive'))[df.substep == 1][50:].plot('timestep', ['basefee_multiplicative','basefee_additive'])
 ```
-<img src="https://raw.githubusercontent.com/alidarvishi14/EIP-1559-simulation/b8e077ea0ea58e66ab11a9488a40436080682da9/output_25_0.svg">
+<img src="https://raw.githubusercontent.com/mtefagh/fee/master/README_files/figure-markdown_github/basefee-3416.svg">
 
 ## Relation to constant function market makers
 
@@ -330,11 +330,11 @@ This is interestingly related to the concept of path independence in automated m
 
 - the Almgren-Chriss [additive](https://ethresear.ch/t/draft-position-paper-on-resource-pricing/2838/24) formula in the case of constant sum market maker,
 
-![additive](README_files/figure-markdown_github/additive.svg)
+![additive](https://raw.githubusercontent.com/mtefagh/fee/master/README_files/figure-markdown_github/additive.svg)
 
 - and Vitalik's proposed [exponential](https://ethereum-magicians.org/t/eip-1559-fee-market-change-for-eth-1-0-chain/2783/26) formula in the case of constant product market maker.
 
-![exponential](README_files/figure-markdown_github/exponential.svg)
+![exponential](https://raw.githubusercontent.com/mtefagh/fee/master/README_files/figure-markdown_github/exponential.svg)
 
 This observation immediately implies that both of these update rules (and any other one based on another constant function market maker) are path-independent. Ironically, this is exactly why we have arrived at these formulas in the first place when attempting to solve a simple instance of path dependence attacks.
 
@@ -390,7 +390,7 @@ block_df.to_csv('tx.csv', sep='\t', index=False)
 
 Before we begin, some plots from the raw data (gas price will be normalized later):
 
-![](README_files/figure-markdown_github/unnamed-chunk-3-1.png)![](README_files/figure-markdown_github/unnamed-chunk-3-2.png)
+![](https://raw.githubusercontent.com/mtefagh/fee/master/README_files/figure-markdown_github/unnamed-chunk-3-1.png)![](README_files/figure-markdown_github/unnamed-chunk-3-2.png)
 
 Now, we throw out the `round_gp_10gpwei` column and divide the `gas_price` by 10<sup>8</sup>. Then we group our gas prices data by the blocks and we compute a summary (`min,median,mean,max`). The blocks are consecutive and their numbers are made to start from zero in order to have a bit more visually appealing plots!
 
@@ -400,25 +400,25 @@ Here are some plots. `geom_smooth()` uses by default the Local Regression (`loes
 
 To show the effectiveness/stability of median over other methods, we plot the data points along with the prediction curve of each (`min,median,mean,max`). Notice the scale of `max` is quite different therefore, although it seems stable its prediction curve has much higher errors than median. See the last two plots to compare the scale of their fluctutations.
 
-![](README_files/figure-markdown_github/unnamed-chunk-5-1.png)
+![](https://raw.githubusercontent.com/mtefagh/fee/master/README_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
-![](README_files/figure-markdown_github/unnamed-chunk-6-1.png)
+![](https://raw.githubusercontent.com/mtefagh/fee/master/README_files/figure-markdown_github/unnamed-chunk-6-1.png)
 
-![](README_files/figure-markdown_github/unnamed-chunk-7-1.png)
+![](https://raw.githubusercontent.com/mtefagh/fee/master/README_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
-![](README_files/figure-markdown_github/unnamed-chunk-8-1.png)
+![](https://raw.githubusercontent.com/mtefagh/fee/master/README_files/figure-markdown_github/unnamed-chunk-8-1.png)
 
 Here is the max, median, and min statistics summary plot:
 
-![](README_files/figure-markdown_github/unnamed-chunk-9-1.png)
+![](https://raw.githubusercontent.com/mtefagh/fee/master/README_files/figure-markdown_github/unnamed-chunk-9-1.png)
 
 Here is how the mean and median and minimum curves compare:
 
-![](README_files/figure-markdown_github/unnamed-chunk-10-1.png)
+![](https://raw.githubusercontent.com/mtefagh/fee/master/README_files/figure-markdown_github/unnamed-chunk-10-1.png)
 
 Here is how all curves compare:
 
-![](README_files/figure-markdown_github/unnamed-chunk-11-1.png)
+![](https://raw.githubusercontent.com/mtefagh/fee/master/README_files/figure-markdown_github/unnamed-chunk-11-1.png)
 
 <!-- Let us see how the method `gam` errors compare in each case: -->
 <!-- Here you will first need to normalized each column to make this meaningful -->
