@@ -249,8 +249,11 @@ df[50:][df.substep == 1].plot('timestep', ['basefee'])
 <img src='https://raw.githubusercontent.com/alidarvishi14/EIP-1559-simulation/b8e077ea0ea58e66ab11a9488a40436080682da9/output_19_0.svg'>
 
 ## An unintentional uncoordinated attack
+
 Now assume a percentage of users with a considerable number of transactions (like the users of a wallet client designed to have this optimization as a built-in feature) want to pay less basefee, even though, they do not intend to manipulate it. They can simply do so by sending all of their transactions in a more-than-target full block and not sending any transactions in blocks with a size considerably below the target size. This action would make basefee decrease over time and eventually converge to zero. We have to incentivize such honest but rational users to smoothly send their transactions instead of sending them in bulk.
+
 ## A possible solution to this attack
+
 The problem of sending a large number of transactions is equivalent to the problem of liquidating a large portfolio as discussed in ["Optimal Execution of Portfolio Transactions"](https://pdfs.semanticscholar.org/3d2d/773983c5201b58586af463f045befae5bbf2.pdf). It is shown in this paper that with an additive cost function, the trader's optimal execution of transaction strategy is to distribute the transactions across time. Therefore, if we update basefee with an additive rule, users are incentivised to gradually send transactions during a long period of time and spread them across different blocks which in turn helps to avoid network congestion.
 
 In this section, we change `update_basefee` function with an additive fucntion which is convex in basefee and gas_used jointly.
@@ -324,8 +327,14 @@ df.merge(df2,on=['timestep','subset','simulation','run','substep'],suffixes=('_m
 ## Relation to constant function market makers
 
 This is interestingly related to the concept of path independence in automated market makers (see section 2.3 in [here](https://arxiv.org/abs/2003.10001)). Consider a hypothetical automated market maker as a protocol-level price oracle for the trading pair GAS/ETH whose reserve of gas and ether after the n-th trade are $g_n$ and $f_n \times g_n$, respectively. Moreover, let $g_{n+1} = g_n + M/2 - w_n$, that is, $g +=$ excess. It can be proved that, the limit of $f_n$ as the initial reserve $g_0$ goes to infinity is given by:
+
 - the Almgren-Chriss [additive](https://ethresear.ch/t/draft-position-paper-on-resource-pricing/2838/24) formula in the case of constant sum market maker,
+
+![additive](README_files/figure-markdown_github/additive.svg)
+
 - and Vitalik's proposed [exponential](https://ethereum-magicians.org/t/eip-1559-fee-market-change-for-eth-1-0-chain/2783/26) formula in the case of constant product market maker.
+
+![exponential](README_files/figure-markdown_github/exponential.svg)
 
 This observation immediately implies that both of these update rules (and any other one based on another constant function market maker) are path-independent. Ironically, this is exactly why we have arrived at these formulas in the first place when attempting to solve a simple instance of path dependence attacks.
 
