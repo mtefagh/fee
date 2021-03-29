@@ -16,9 +16,9 @@ In this proposal basefee is updated according to the following formula:
 
 ![\Large delta](https://latex.codecogs.com/svg.latex?delta=gas\ used-target\ gas\ used)
 
-![\Large new\ basefee=basefee](https://latex.codecogs.com/svg.latex?new\ basefee=basefee+basefee\times\ \frac{delta}{target\ gas\ used}\times\frac{1}{basefee\ max\ change\ denominator})
+![\Large basefee](https://latex.codecogs.com/svg.latex?new\ basefee=basefee+basefee\times\ \frac{delta}{target\ gas\ used}\times\frac{1}{basefee\ max\ change\ denominator})
 
-
+![fluctuation](README_files/figure-markdown_github/fluctuation.svg)
 
 ## The simulation of permanent loss
 We will simulate the basefee parameter in EIP-1559 and show in a world where only 5% of users are rational enough to optimize for paying less fee if possible, the basefee will eventually decrease to 0.
