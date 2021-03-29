@@ -426,3 +426,10 @@ Here is how all curves compare:
 <!-- gam.med <- gam(min_gas_price~block_mined,data=tx.summary) -->
 <!-- gam.med$deviance -->
 <!-- ``` -->
+
+## Summary and further resources
+
+Designed an attack for EIP-1559 and proposed an alternative transaction fee pricing protocol based on the Almgren–Chriss framework and median price auctions.
+
+- https://ethresear.ch/t/path-dependence-of-eip-1559-and-the-simulation-of-the-resulting-permanent-loss/8964
+- https://github.com/ethereum/EIPs/blob/master/EIPS/eip-3416.md
