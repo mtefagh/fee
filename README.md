@@ -332,7 +332,7 @@ This is interestingly related to the concept of path independence in automated m
 
 ![additive](https://raw.githubusercontent.com/mtefagh/fee/master/README_files/figure-markdown_github/additive.svg)
 
-- and Vitalik's proposed [exponential](https://ethereum-magicians.org/t/eip-1559-fee-market-change-for-eth-1-0-chain/2783/26) formula in the case of constant product market maker.
+- and Bertsimas-Lo [exponential](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2034178) formula in the case of constant product market maker.
 
 ![exponential](https://raw.githubusercontent.com/mtefagh/fee/master/README_files/figure-markdown_github/exponential.svg)
 
