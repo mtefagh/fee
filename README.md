@@ -1,5 +1,6 @@
 # Path-dependence problem with EIP-1559 and a possible solution to this problem
 [![hackmd-github-sync-badge](https://hackmd.io/c6kyRNMuTnKf_SlolmevRg/badge)](https://hackmd.io/c6kyRNMuTnKf_SlolmevRg)
+[![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://github.com/mtefagh/fee/blob/master/LICENSE)
 
 alidarvishi14@gmail.com
 
