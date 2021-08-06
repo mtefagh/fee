@@ -15,11 +15,66 @@ As discussed in EIP-1559, users have to pay a basefee that will be burned for ea
 
 In this proposal basefee is updated according to the following formula:
 
-![\Large delta](https://latex.codecogs.com/svg.latex?delta=gas\ used-target\ gas\ used)
+$$delta=gas\ used-target\ gas\ used$$
 
-![\Large basefee](https://latex.codecogs.com/svg.latex?new\ basefee=basefee+basefee\times\ \frac{delta}{target\ gas\ used}\times\frac{1}{basefee\ max\ change\ denominator})
+$$new\ basefee=basefee+basefee\times\ \frac{delta}{target\ gas\ used}\times\frac{1}{basefee\ max\ change\ denominator}$$
+
+Here we declare and proof a statement:
 
 ![fluctuation](https://raw.githubusercontent.com/mtefagh/fee/master/README_files/figure-markdown_github/fluctuation.svg)
+
+So assuming that the cumulative deviation of the sum of gas cost from the sum of target gas cost is bounded (has a finite upper bound which can be arbitrary large enough), then gas price converges to zero unless the gas used in each block converges to the constant function equal to the target gas (which will never happen in reality). Therefore for a large enough sequence of blocks, we would expect that difference between the sum of gas used and the sum of the gas target is going to grow.
+
+In this part we are gathering data to show that this has happened after the London upgrade.
+
+``` python
+# importing required libraries
+from bs4 import BeautifulSoup
+import cloudscraper
+import time
+import pandas as pd
+from matplotlib import pyplot as plt
+
+# declaring parameters
+scraper = cloudscraper.create_scraper()
+url= "https://etherscan.io/blocks?ps=100&p="
+first_block = 12_965_000
+```
+
+``` python
+# getting data
+df = pd.DataFrame()
+for i in range(100):
+    r = scraper.get(url+str(i+1))
+    soup = BeautifulSoup(r.content, 'html.parser')
+    new_table = soup.select('td:nth-child(1) , td:nth-child(7) , td:nth-child(8)')
+    new_blocks = [int(new_table[3*i].text) for i in range(100)]
+    new_gasused = [int(new_table[3*i+1].text.split()[0].replace(',','')) for i in range(100)]
+    new_gaslimit = [int(new_table[3*i+2].text.replace(',','')) for i in range(100)]
+    new_dict = {'block':new_blocks,'gas_used':new_gasused,'gas_limit':new_gaslimit}
+    df=df.append(pd.DataFrame(new_dict), ignore_index=True)
+    if(df.block.min()<first_block):
+        break
+    time.sleep(0.1)
+# data cleaning
+df = df[df.block>=first_block].sort_values('block').set_index('block')
+new_df = df.cumsum()
+new_df['target_gas'] = new_df.gas_limit/2
+```
+
+``` python
+plt.figure(figsize=(12,8))
+new_df.gas_used.plot(label='cumulative gas used');
+new_df.target_gas.plot(label='cumulative target gas');
+plt.legend();
+plt.figure(figsize=(12,8))
+(new_df.gas_used-new_df.target_gas).plot(label='cumulative difference of gas used and target gas');
+plt.legend();
+```
+
+![fluctuation](https://raw.githubusercontent.com/alidarvishi14/EIP-1559-simulation/8c57b220d4c35891267cd4c54f28dc2796c388d7/fig1.svg)
+
+![fluctuation](https://raw.githubusercontent.com/alidarvishi14/EIP-1559-simulation/8c57b220d4c35891267cd4c54f28dc2796c388d7/fig2.svg)
 
 ## The simulation of permanent loss
 We will simulate the basefee parameter in EIP-1559 and show in a world where only 5% of users are rational enough to optimize for paying less fee if possible, the basefee will eventually decrease to 0.
