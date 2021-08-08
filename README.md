@@ -72,9 +72,15 @@ plt.figure(figsize=(12,8))
 plt.legend();
 ```
 
-![fluctuation](https://raw.githubusercontent.com/alidarvishi14/EIP-1559-simulation/8c57b220d4c35891267cd4c54f28dc2796c388d7/fig1.svg)
+![fluctuation](https://raw.githubusercontent.com/alidarvishi14/EIP-1559-simulation/8f3f4203dba5c96256c9978d6486be7bd2902583/fig1.svg)
 
-![fluctuation](https://raw.githubusercontent.com/alidarvishi14/EIP-1559-simulation/8c57b220d4c35891267cd4c54f28dc2796c388d7/fig2.svg)
+![fluctuation](https://raw.githubusercontent.com/alidarvishi14/EIP-1559-simulation/8f3f4203dba5c96256c9978d6486be7bd2902583/fig2.svg)
+
+Finally, we compare the histogram of gas used in each block before and after the London hard fork. As one can see, the target which is the full block size is achieved most of the time pre-fork. However as a result of the predicted oscillations, we observe a bimodal density post-fork where the target which is the half block size is rarely achieved.
+
+![fluctuation](https://raw.githubusercontent.com/alidarvishi14/EIP-1559-simulation/8f3f4203dba5c96256c9978d6486be7bd2902583/before.svg)
+
+![fluctuation](https://raw.githubusercontent.com/alidarvishi14/EIP-1559-simulation/8f3f4203dba5c96256c9978d6486be7bd2902583/after.svg)
 
 ## The simulation of permanent loss
 We will simulate the basefee parameter in EIP-1559 and show in a world where only 5% of users are rational enough to optimize for paying less fee if possible, the basefee will eventually decrease to 0.
